@@ -1,81 +1,167 @@
-# Store prototype
+# Shopify Store to Mobile App
 
-A shared Expo app that renders two sample Shopify-style stores from one set of screens. Apex Athletics is a dark athletic store priced in USD. Northline is a light outerwear store priced in JPY. Gymshark is a visual reference only: this project does not use that name, logo, photography, or catalog.
+A React Native assignment prototype showing how one shared codebase can power different branded Android and iOS storefronts. Gymshark is the visual reference; the app uses fictional brands, original copy, and AI-generated product imagery, without Gymshark credentials or assets.
 
-Live Shopify, login, and payment are not connected. Product and cart GraphQL for a future Storefront integration is in `src/data/shopify/operations.ts`. The architecture write-up is in `docs/ARCHITECTURE.md`.
+**Demo only:** products, prices, stock, and reviews are sample data. Checkout does not place orders or take payment. No Shopify account, API keys, or paid services are required.
 
-## Run
+## Assignment deliverables
+
+- Source code and setup instructions: this repository and the steps below.
+- Architecture diagram and integration plan: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+- Third-party compatibility research: the architecture document covers reviews, loyalty, subscriptions, search, discounts/bundles, notifications, analytics, support, order tracking, and returns, including providers, approaches, fallbacks, and official documentation links.
+- Proposed Storefront GraphQL operations: [src/data/shopify/operations.ts](src/data/shopify/operations.ts).
+- Walkthrough recording: not yet provided; a suggested recording sequence is included below.
+
+## Two stores, shared screens
+
+**THREAD & FORM** is a dark clothing and footwear storefront with eight products, USD pricing, and reviews enabled. Its catalog includes Everyday Mesh Sneaker, Essential Pullover Hoodie, Weekend Drawstring Shorts, Classic Crew Tee, Alpine Hooded Parka, Oatmeal Knit Sweater, Ribbed Cuff Beanie, and Cozy Knit Socks.
+
+**STILL HOME** is a warm, light home-goods storefront with JPY pricing and reviews disabled. Its catalog includes Mori Dome Table Lamp, Sunday Stoneware Mug, Terra Arch Vase, and Tempo Oak Wall Clock.
+
+Both stores use the same screen components. [src/config/stores.ts](src/config/stores.ts) controls brand name, tagline, promotional banner, colors, currency, catalog mapping, typography, corner radius, and the reviews feature flag. Internal IDs remain `apex` and `northline` for persistence compatibility; these are not display names.
+
+## Implemented features
+
+- Branded welcome screen with store selection and Skip.
+- Two-column collection with store-specific banners and bundled product images.
+- Product details, variant selection, variant-specific prices, and unavailable options.
+- Separate persistent carts per store, with quantity changes, removal, subtotal, and demo checkout.
+- Cart product images and names open product details independently of quantity/removal controls.
+- Switching stores returns to the correct collection; tapping the active store does not navigate again.
+- Loading, error/retry, empty-cart, missing-product, and missing/unavailable saved-item states.
+- Mock reviews demonstrating success, unavailable, and configuration-disabled states.
+
+Money uses integer minor units: USD has two decimal places and JPY has none. Cart rows persist variant IDs and quantities; names, prices, availability, and product links are resolved from the current catalog. Missing or unavailable items are excluded from the subtotal and block checkout until removed. Cart writes wait for AsyncStorage hydration.
+
+## Tech stack
+
+- Expo SDK 58, React Native 0.88, React 19, and TypeScript.
+- React Navigation native stack for the current screen flow.
+- Zustand and AsyncStorage for cart state and persistence.
+- Repository and adapter interfaces separating UI from mock data.
+
+## Setup
+
+Use Node.js compatible with the installed Expo version: `^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0`, plus npm.
 
 ```bash
-npm install
+npm ci
 npm start
 ```
 
-Android:
+Use an Expo Go version compatible with SDK 58 and scan the Metro QR code. If that SDK is not supported by your Expo Go installation, use a native debug build.
+
+### Android
+
+Install Android Studio/Android SDK and a compatible JDK. Start an emulator or connect a phone with USB debugging enabled:
 
 ```bash
 npm run android
 ```
 
-iOS, from macOS:
+For an already-installed debug build on a USB-connected phone:
 
 ```bash
+adb reverse tcp:8081 tcp:8081
+npx expo start --localhost --port 8081
+```
+
+Open the installed app and keep Metro running.
+
+### iOS
+
+On macOS with Xcode and its required command-line tools:
+
+```bash
+npm ci
 npm run ios
 ```
 
-Typecheck:
+Native `android/` and `ios/` directories are generated locally by Expo and ignored by Git. Native configuration belongs in `app.json` and config plugins.
+
+### Checks
 
 ```bash
 npm run typecheck
+npx expo lint
 ```
 
-Use Expo Go on a device, or an Android emulator. This project was developed on Windows.
+ESLint is not currently configured. Expo's automatic lint setup could not download dependencies in the restricted development environment, so lint has not passed.
 
-## Walkthrough
+To check Android JavaScript and asset bundling without invoking the Hermes bytecode compiler:
 
-1. Welcome shows the active brand, both stores, and Skip. Skip opens Apex Athletics. Choosing Northline resets the stack to Home and swaps brand, currency, and catalog.
-2. Home has the same switcher. Switching stores returns to Home so a product from the previous store cannot stay open.
-3. Open a product, choose a variant, and add it. Size 11 of Stride Runner, X-Large of Flex Hoodie, Olive of Training Tee, Large of Ridge Parka, and X-Large of Wool Sock are unavailable and cannot be added.
-4. The cart updates quantity, blocks a quantity below 1, removes lines, and shows a subtotal in the store currency. Adding the same variant again increases quantity.
-5. Checkout opens a demo sheet. It explains production checkout and does not take payment. Missing or unavailable saved lines must be removed before checkout.
-6. Force-close the app and reopen it. Each store still has its own cart.
-7. Reviews on Apex: Stride Runner shows sample reviews. Flex Hoodie shows an unavailable message. Northline has reviews turned off, so the section is absent.
-8. Prototype actions: Simulate catalog error, then Retry. Simulate product error, then Retry. Open unknown product. On the cart, simulate a saved unavailable item and a missing saved item.
+```bash
+npx expo export --platform android --no-bytecode --output-dir .expo/catalog-check
+```
 
-Prices are integer minor units. USD uses 2 decimal places. JPY uses none.
+This validates a JavaScript/assets export, not a production APK or native release build.
 
-## Platforms tested
+## Architecture and production integration
 
-- TypeScript: `npm run typecheck` passed.
-- Currency and cart rules were executed in Node. `$128.00` is 12800 USD minor units, `¥24,800` is 24800 JPY minor units, and a 3-decimal currency such as BHD formats `1.234` from 1234 minor units. Duplicate adds merge, unavailable variants are rejected, quantity cannot fall below 1, and missing or unavailable saved lines stay out of the subtotal and checkout.
-- Android: Metro bundled the Android JavaScript successfully (891 modules). A Motorola phone was attached through adb. `npx expo start --android` started Metro and tried to open the project on that phone, then stalled while downloading Expo Go. Expo Go was not installed, no virtual device is configured, and the only JDK found is Java 8, which cannot build the current native app. The shopping flow was not clicked through on a device.
-- iOS: not run. This computer is Windows.
+The implemented flow is shared screens -> `ProductRepository` / `ReviewsAdapter` -> local mock data. Cart state lives on-device. Screens consume interfaces instead of importing catalog fixtures directly.
 
-## Submission notes
+The [architecture plan](docs/ARCHITECTURE.md) covers merchant onboarding, Shopify authorization, secure credentials, backend caching/synchronization, reusable adapters, per-merchant builds, and three technical risks. It distinguishes configurable branding from changes requiring a new binary or custom development. Remote configuration and release automation are proposals, not implemented features.
 
-- AI tools: Cursor with Grok 4.7, used to implement this prototype from the assignment brief.
-- Issue corrected: the home list footer passed `null`, which TypeScript rejects for `FlatList`. It now passes `undefined` when the prototype actions are hidden. Cart writes also wait until AsyncStorage hydration finishes, so an add during restore is not overwritten by the saved cart.
-- Time spent: one working session covering the prototype, architecture document, and verification above.
-- Unfinished: the three-minute walkthrough recording. Live Shopify, authentication, and payments are intentionally not connected. Android and iOS were not launched on this machine.
+The [GraphQL file](src/data/shopify/operations.ts) includes collection/product queries and `cartCreate`, `cartLinesAdd`, `cartLinesUpdate`, and `cartLinesRemove` mutations. They are not executed by the prototype.
 
-## Project layout
+In production, the integration would create/update a Storefront cart and open the returned `checkoutUrl` in Shopify-hosted checkout through a supported mobile integration. Merchant authorization and Admin API credentials belong on the backend. The app does not collect payment details.
+
+The compatibility plan classifies integrations as Shopify-native, reusable provider adapters, web fallbacks, or unsupported features. Liquid widgets and website scripts do not automatically work in native screens.
+
+## Reviews and failure scenarios
+
+On THREAD & FORM, Everyday Mesh Sneaker shows sample reviews. Essential Pullover Hoodie shows the reviews-unavailable fallback while shopping remains usable. STILL HOME hides reviews through `featureReviews: false`.
+
+Expand **Prototype testing > Show** near the bottom of the relevant screen to simulate a collection error, product error, unknown product, unavailable saved cart item, or missing saved cart item. Error screens provide Retry.
+
+Empty the cart to see its empty state. Size 11 of Everyday Mesh Sneaker and the large Mori Dome Table Lamp are examples of unavailable variants. Loading UI is implemented, but local mocks resolve quickly; loading messages wait 200 ms to avoid flashing.
+
+## Suggested three-minute walkthrough
+
+1. Show the branded welcome screen, Skip, and THREAD & FORM collection.
+2. Open a product, show an unavailable option, choose an available variant, and add it. Change quantity, open details from the cart, and show demo checkout.
+3. Restart the app to demonstrate persistence. Switch to STILL HOME to show different branding, products, currency, and an independent cart.
+4. Show `stores.ts` and its reviews flag. Demonstrate reviews success on the sneaker and the unavailable fallback on the hoodie.
+5. Demonstrate one error/retry flow, then briefly show the architecture diagram and explain production checkout.
+
+Recording link: not yet provided.
+
+## Platforms and validation
+
+- **TypeScript:** `npx tsc --noEmit` passed during implementation.
+- **Android export:** JavaScript/assets bundling passed using `--no-bytecode`. Full export previously encountered Windows `spawn EPERM` while invoking Hermes.
+- **Android device:** the debug app was launched on a connected physical phone. The refreshed welcome, clothing collection, and product-detail screens were visually checked, including correct image scaling. This was focused visual verification, not a full regression of every flow.
+- **Cart logic:** one-off Node checks passed for available/unavailable/missing product-link resolution and subtotal exclusion of unavailable/missing items. These are not a committed automated test suite.
+- **Lint:** blocked by missing ESLint configuration and network access during setup.
+- **iOS:** not run. Development was performed on Windows; macOS instructions are above.
+
+## AI assistance and corrected issue
+
+The original implementation notes report Cursor with Grok 4.7. Subsequent work used OpenAI Codex for catalog/UI updates, navigation fixes, checks, and documentation, and its built-in image generation tool for product and banner assets. [Asset notes and prompts](assets/catalog/README.md) are included.
+
+One corrected issue was oversized/cropped product images on Android. Bundled bitmaps retained intrinsic dimensions when positioned only with absolute edges. Explicit `width: "100%"` and `height: "100%"` now size them to their frames. Product images use `contain`; promotional banners use `cover`. The fix was visually checked on the connected phone.
+
+## Limitations and remaining work
+
+- Add the walkthrough recording link.
+- Configure ESLint and complete lint successfully.
+- Complete Android end-to-end regression and iOS validation, including persistence, store isolation, and failure states.
+- Catalog data, reviews, and generated product imagery are demonstrations, not verified merchant data.
+- Live Shopify, customer login, payments, backend services, remote configuration, and per-merchant release automation are not implemented. Live login and payments are not required by the assignment.
+- A live repository would also need remote Shopify image URL support in place of the current local image-key mapping.
+
+## Project structure
 
 ```text
-App.tsx
-src/config/stores.ts
-src/config/StoreContext.tsx
-src/navigation/RootNavigator.tsx
-src/data/ProductRepository.ts
-src/data/MockProductRepository.ts
-src/data/sampleCatalog.ts
-src/data/cartStore.ts
-src/data/resolveCartLines.ts
-src/data/shopify/operations.ts
-src/integrations/ReviewsAdapter.ts
-src/integrations/MockReviewsAdapter.ts
-src/screens/WelcomeScreen.tsx
-src/screens/HomeScreen.tsx
-src/screens/ProductScreen.tsx
-src/screens/CartScreen.tsx
-docs/ARCHITECTURE.md
+App.tsx                         App providers and navigation entry
+src/config/                     Branding and active-store context
+src/navigation/                 Shared native stack and route types
+src/screens/                    Welcome, collection, product, and cart
+src/components/                 Reusable UI, images, and demo states
+src/data/                       Repository, cart, money, and fixtures
+src/data/shopify/operations.ts   Proposed Storefront GraphQL operations
+src/integrations/               Reviews interface and mock adapter
+src/hooks/                      Async loading and retry
+assets/catalog/                 Bundled imagery and generation notes
+docs/ARCHITECTURE.md             Architecture and integration plan
 ```
