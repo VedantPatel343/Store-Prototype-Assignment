@@ -2,7 +2,15 @@
 
 This document describes a reusable React Native platform that turns Shopify stores into branded Android and iOS apps. The prototype in this repository uses labelled sample data. The production shape below is what that code is built to grow into.
 
+## Implementation boundary
+
+Today, shared screens read bundled StoreConfig records and local mock product/review adapters; cart state persists on-device. No backend, Shopify API calls, OAuth, remote configuration, or release automation is implemented. The system diagram below is the proposed production integration, not the running prototype.
+
 ## System
+
+Standalone diagram: [architecture-diagram.svg](./architecture-diagram.svg).
+
+![Proposed production architecture](./architecture-diagram.svg)
 
 ```mermaid
 flowchart TD
@@ -36,7 +44,7 @@ Screens read that config. They do not branch on a store id to pick colors, produ
 
 | Change | How it ships |
 |---|---|
-| Colors, copy, currency, feature flags, catalog mapping | Configuration. No new binary. |
+| Colors, copy, currency, feature flags, catalog mapping | Switching existing bundled records works at runtime. Editing records requires shipping updated JavaScript. A future remote configuration service could deliver validated changes without an app update. |
 | App name, icon, splash, bundle id, store listing, deep-link scheme | New build and store release. |
 | A Shopify app or theme customization with no API, metafields, or stable URL | Custom development, or an explicit unsupported state. |
 

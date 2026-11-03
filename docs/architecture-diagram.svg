@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">Shopify store to mobile app architecture</title>
+  <desc id="desc">Merchant admin OAuth and Shopify APIs feed an app backend with catalog cache and integration adapters. A shared React Native app reads store config and talks only to the backend.</desc>
+  <rect width="960" height="560" fill="#0F1115"/>
+  <text x="40" y="44" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600">Production architecture</text>
+  <text x="40" y="72" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Prototype uses mock repositories; this is the target shape</text>
+
+  <!-- Merchant -->
+  <rect x="40" y="110" width="180" height="64" rx="8" fill="#1A1F27" stroke="#3A4452"/>
+  <text x="130" y="138" text-anchor="middle" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600">Merchant Admin</text>
+  <text x="130" y="158" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Install app</text>
+
+  <!-- OAuth -->
+  <rect x="260" y="110" width="180" height="64" rx="8" fill="#1A1F27" stroke="#3A4452"/>
+  <text x="350" y="138" text-anchor="middle" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600">Shopify OAuth</text>
+  <text x="350" y="158" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Offline token</text>
+
+  <!-- Shopify -->
+  <rect x="480" y="110" width="200" height="64" rx="8" fill="#1A1F27" stroke="#3A4452"/>
+  <text x="580" y="138" text-anchor="middle" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600">Shopify APIs</text>
+  <text x="580" y="158" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Storefront · Admin · Webhooks</text>
+
+  <!-- Backend -->
+  <rect x="260" y="230" width="420" height="90" rx="8" fill="#14241F" stroke="#2F6B5A"/>
+  <text x="470" y="268" text-anchor="middle" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="600">App Backend</text>
+  <text x="470" y="292" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Encrypted merchant credentials · catalog cache · cart proxy</text>
+
+  <!-- Cache + Adapters -->
+  <rect x="260" y="360" width="190" height="70" rx="8" fill="#1A1F27" stroke="#3A4452"/>
+  <text x="355" y="392" text-anchor="middle" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600">Catalog Cache</text>
+  <text x="355" y="412" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Webhook invalidation</text>
+
+  <rect x="490" y="360" width="190" height="70" rx="8" fill="#1A1F27" stroke="#3A4452"/>
+  <text x="585" y="392" text-anchor="middle" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600">Adapters</text>
+  <text x="585" y="412" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Reviews · loyalty · etc.</text>
+
+  <!-- Mobile app -->
+  <rect x="720" y="230" width="200" height="200" rx="8" fill="#1B2230" stroke="#4A6FA5"/>
+  <text x="820" y="280" text-anchor="middle" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Shared RN App</text>
+  <text x="820" y="308" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Expo · one codebase</text>
+  <text x="820" y="340" text-anchor="middle" fill="#F5F5F2" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">StoreConfig</text>
+  <text x="820" y="362" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">theme · currency · flags</text>
+  <text x="820" y="396" text-anchor="middle" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">No Admin tokens on device</text>
+
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#7D8A99"/>
+    </marker>
+  </defs>
+  <line x1="220" y1="142" x2="255" y2="142" stroke="#7D8A99" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="440" y1="142" x2="475" y2="142" stroke="#7D8A99" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="350" y1="174" x2="350" y2="225" stroke="#7D8A99" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="580" y1="174" x2="470" y2="225" stroke="#7D8A99" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="355" y1="320" x2="355" y2="355" stroke="#7D8A99" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="585" y1="320" x2="585" y2="355" stroke="#7D8A99" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="680" y1="275" x2="715" y2="275" stroke="#7D8A99" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <text x="40" y="520" fill="#A3A39C" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">See ARCHITECTURE.md for onboarding, APIs, third-party compatibility, and risks.</text>
+</svg>

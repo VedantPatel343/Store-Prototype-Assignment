@@ -6,11 +6,13 @@ A React Native assignment prototype showing how one shared codebase can power di
 
 ## Assignment deliverables
 
-- Source code and setup instructions: this repository and the steps below.
-- Architecture diagram and integration plan: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-- Third-party compatibility research: the architecture document covers reviews, loyalty, subscriptions, search, discounts/bundles, notifications, analytics, support, order tracking, and returns, including providers, approaches, fallbacks, and official documentation links.
-- Proposed Storefront GraphQL operations: [src/data/shopify/operations.ts](src/data/shopify/operations.ts).
-- Walkthrough recording: not yet provided; a suggested recording sequence is included below.
+| Deliverable | Location |
+|---|---|
+| Source code and setup instructions | This repository + [Setup](#setup) below |
+| Architecture diagram and integration plan | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/architecture-diagram.svg](docs/architecture-diagram.svg) |
+| Third-party compatibility research | Same architecture doc (reviews, loyalty, subscriptions, search, discounts/bundles, notifications, analytics, support, order tracking, returns) |
+| Proposed Storefront GraphQL operations | [src/data/shopify/operations.ts](src/data/shopify/operations.ts) |
+| Walkthrough | Coverage: [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md). Recording: [Final walkthrough (1:07)](docs/walkthrough-rerecorded.mp4) |
 
 ## Two stores, shared screens
 
@@ -116,15 +118,18 @@ Expand **Prototype testing > Show** near the bottom of the relevant screen to si
 
 Empty the cart to see its empty state. Size 11 of Everyday Mesh Sneaker and the large Mori Dome Table Lamp are examples of unavailable variants. Loading UI is implemented, but local mocks resolve quickly; loading messages wait 200 ms to avoid flashing.
 
-## Suggested three-minute walkthrough
+## Walkthrough
 
-1. Show the branded welcome screen, Skip, and THREAD & FORM collection.
-2. Open a product, show an unavailable option, choose an available variant, and add it. Change quantity, open details from the cart, and show demo checkout.
-3. Restart the app to demonstrate persistence. Switch to STILL HOME to show different branding, products, currency, and an independent cart.
-4. Show `stores.ts` and its reviews flag. Demonstrate reviews success on the sneaker and the unavailable fallback on the hoodie.
-5. Demonstrate one error/retry flow, then briefly show the architecture diagram and explain production checkout.
+Final video chapters and coverage notes: [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md).
 
-Recording link: not yet provided.
+1. Shopping journey — welcome → THREAD & FORM collection → product (unavailable + available variant) → cart → demo checkout.
+2. Store configuration change — switch to STILL HOME (theme, currency, catalog, independent cart); show `src/config/stores.ts`.
+3. Integration fallback — reviews hidden on STILL HOME; reviews unavailable on hoodie while shopping still works; one Prototype testing error + Retry.
+4. Show two products per store with short screen holds. The architecture diagram and production integration plan are linked above.
+
+The latest video uses fresh device footage, short configuration callouts, and brief screen holds. It includes the reviews fallback and shopping flow for two products per store. The architecture diagram is provided separately above.
+
+Recording: [Final walkthrough (1:07, captioned MP4)](docs/walkthrough-rerecorded.mp4). Physical Android footage covers the shopping journey, switching the active store configuration, independent carts, and reviews fallback; short callouts explain currency and reviews settings. Product detail demonstrations cover only Everyday Mesh Sneaker, Essential Pullover Hoodie, Mori Dome Table Lamp, and Sunday Stoneware Mug. No voiceover.
 
 ## Platforms and validation
 
@@ -143,7 +148,7 @@ One corrected issue was oversized/cropped product images on Android. Bundled bit
 
 ## Limitations and remaining work
 
-- Add the walkthrough recording link.
+- Optional: upload the [re-recorded walkthrough](docs/walkthrough-rerecorded.mp4) for a shareable URL. The repository includes the video itself.
 - Configure ESLint and complete lint successfully.
 - Complete Android end-to-end regression and iOS validation, including persistence, store isolation, and failure states.
 - Catalog data, reviews, and generated product imagery are demonstrations, not verified merchant data.
@@ -164,4 +169,7 @@ src/integrations/               Reviews interface and mock adapter
 src/hooks/                      Async loading and retry
 assets/catalog/                 Bundled imagery and generation notes
 docs/ARCHITECTURE.md             Architecture and integration plan
+docs/architecture-diagram.svg    Standalone architecture diagram
+docs/WALKTHROUGH.md              Final video chapters and coverage notes
 ```
+
